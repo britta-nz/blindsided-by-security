@@ -1,0 +1,319 @@
+; To install this JAWS script 
+; Start JAWS 13 and Open IE 9 (script did not work in Firefox 14 due to scroll lock issue)
+; Press Insert+0 to open 'all scripts file' for IE
+: Control+End and Control+E to insert new script, name it, assign the Control+Alt+R keystroke
+; Copy contents between Sript ... and EndScript to your script file
+; Press Control+S to compile and save.
+; Tested with Users Screen resolution set to 1366x768, Control+0 zoom.
+; Install JAWS Dictionary file (default.jdf), to enable the colour reporting and slider action instructions.
+
+
+Script ResistanceIsFutile () ;Control+Alt+R
+
+var
+int iXCoord,
+int iYCoord,
+int iXOffset,
+int iYOffset,
+int iXSubmitButton,
+int iYSubmitButton,
+int iXBand1,
+int iYBand1,
+int iXBand2,
+int iYBand2,
+int iXBand3,
+int iYBand3,
+int iXBand4,
+int iYBand4,
+int iColor,
+string strResistorDlgSelect,
+string  strResistor,
+int i,
+int index,
+int iScrollPage,
+int iScrollCAPTCHA,
+int iScrollBoundary,
+int iXElectronicsText,
+int iYElectronicsText,
+int iXProveText,
+int iYProveText,
+int iXTotalDistance,
+int iYTotalDistance,
+string strBuf, 
+string uCaseTag, 
+string lCaseAttrs, 
+string strTag,
+string strId,
+string strSliderString,
+int intStrBufCount,
+int iIdStringLength,
+int indexSlider, 
+int iCurrent,
+int j,
+string strIndexPos,
+string strCurrentTagIndex,
+string strSliderDlgSelect,
+int indexReal,
+int iIndexPosCount,
+string strIndexReal,
+int iIndexReal,
+string strSliderSelectString,
+int indexDlgReal
+
+;Start Resistor band select code
+;Scroll CAPTCHA into focus
+let iScrollPage = FindString (GetFocus(), "Submit Comment", S_NEXT, S_UNRESTRICTED)
+pause()
+let iScrollCAPTCHA = FindString (GetFocus(), "Prove you are human", S_NEXT, S_UNRESTRICTED)
+
+RouteJAWSToPC()
+pause()
+JAWSCursor()
+;SayCursorPos(CURSOR_JAWS,0)
+
+;Get Coordinates of the Prove you are human text
+	let iXProveText=GetCursorCol ()
+	let iYProveText=GetCursorRow ()
+
+PcCursor()
+
+;Get Boundaries of the CAPTCHA image, so you can do relative jumps as CAPTCHA zoomed
+let iScrollBoundary = FindString (GetFocus(), "New to electronics?", S_NEXT, S_UNRESTRICTED)
+
+RouteJAWSToPC()
+SpeechOff()
+pause()
+JAWSCursor()
+;SayCursorPos(CURSOR_JAWS,0)
+
+;Get Coordinates of the Electronics Text to use as a jump off point
+	let iXElectronicsText=GetCursorCol ()
+	let iYElectronicsText=GetCursorRow ()
+pause()
+
+; Take relative positions of Text, so when you zoom in, so Resistor Band relative jump still made
+	let iXTotalDistance =  iXElectronicsText - iXProveText
+	let iYTotalDistance =  iYElectronicsText - iYProveText
+
+PcCursor()
+SpeechOn()
+
+;Display Dialog box for user to choose which of the 4 Resistor bands to go to
+for i=1 to 4
+	Let strResistorDlgSelect = " Resistor Band" +IntToString(i)
+	Let  strResistor =  strResistor+LIST_ITEM_SEPARATOR+strResistorDlgSelect
+
+endFor
+
+Let index = dlgSelectItemInList (strResistor, "Resistor Band Number select", FALSE)
+
+; Jump to Resistor band and speak colour and instrcutions for how many down arrow keys to press
+MoveTo(iXElectronicsText,iYElectronicsText)
+pause()
+SpeechOff()
+RouteJAWSToPc ()
+pause()
+SaveCursor()
+JAWSCursor ()
+SpeechOn()
+
+;End Resistor band select code
+
+; Start Prepare Slider code
+let uCaseTag = "DIV"
+let lCaseAttrs = "id"
+let strBuf=GetListOfTags(uCaseTag,lCaseAttrs,LIST_ITEM_SEPARATOR)
+
+ if !strBuf then 
+; no tags found
+Saystring("No tags found")
+ return 
+endIf 
+
+let intStrBufCount = StringSegmentCount (strBuf, LIST_ITEM_SEPARATOR)
+
+for i=1 to intStrBufCount
+
+	strTag = StringSegment (strBuf, LIST_ITEM_SEPARATOR, i) 
+	let iCurrent = i-1
+	let strCurrentTagIndex = IntToString(iCurrent)
+
+; each of the sliders has a unique id, id = "sliderresist1"
+; put all the sliders in a Selection dialog box, so user can select and jump between sliders.
+	let strID = "sliderresist"
+
+	let iIdStringLength = StringLength (strId)+1
+
+; If a match is found, the first matching character index is returned. 1 for matched character 1.
+	if (StringContains (strTag, strId) ) then
+	
+;Use your knowlege of strId string length to extract only the Slider Numbers themselves, for display in dialog box.
+			let strSliderString = SubString (strTag, iIdStringLength, 40)
+
+	if ( strSliderString == 1 || strSliderString == 2 || strSliderString == 3 || strSliderString == 4) then 
+; Jump to the Slider Band
+			strSliderSelectString = "Jump to the Slider for Resistor Band "+strSliderString
+			Let strIndexPos = strIndexPos+LIST_ITEM_SEPARATOR+strCurrentTagIndex
+;Use SliderNumber string and create array
+			Let strSliderDlgSelect = strSliderDlgSelect+ LIST_ITEM_SEPARATOR+strSliderSelectString
+		endif
+	EndIf
+endFor
+
+; End of Prepare Slider code
+
+if (index == 1) then
+SayString(IntToString(index))
+
+;Jump to band 1 Resistor
+	
+	let iXBand1= iXElectronicsText -(iXTotalDistance*195/283)
+	let iYBand1= iYElectronicsText -(iYTotalDistance*32/92)
+
+;Add the offset required in order for the mouse button to be positioned on the first Resistor Band
+	MoveTo(iXBand1,iYBand1)
+
+;Get the colour at that point and say instructions for that colour and Band
+	 iColor = GetColorAtPoint (iXBand1, iYBand1)
+	SayString(IntToString(iColor))
+
+; Put cursor back to Position and state (PC cursor) in case user wants to leave CAPTCHA solving behind.
+	PcCursor ()
+
+;Now jump to slider after instructions are read out
+	Delay (50)
+
+; index = slider.
+let iIndexPosCount = StringSegmentCount (strSliderDlgSelect, LIST_ITEM_SEPARATOR)
+
+; Real Tag index on Webpage
+	strIndexReal = StringSegment (strIndexPos, LIST_ITEM_SEPARATOR, index+1)
+	SayString(strIndexReal)
+	let iIndexReal = StringToInt (strIndexReal)
+
+	if MoveToTagByIndex(iIndexReal, uCaseTag) then 
+		RouteJAWSToPc ()
+		pause()
+		SayString("You are on Slider number")
+		SayString(IntToString(index))
+		SayString(". Activate the JAWS Cursor then Press the Lock Left Mouse Button command, and down arrow to move the slider to the correct resistance value. When you have finished moving the slider, Unlock the left mouse button. Then activate the Pc cursor.")
+		
+	endif
+
+ElIf (index == 2) then
+
+SayString(IntToString(index))
+
+;Jump to band 2 Resistor
+	
+	let iXBand2= iXElectronicsText -(iXTotalDistance*160/283)
+	let iYBand2= iYElectronicsText -(iYTotalDistance*32/92)
+
+;Add the offset required in order for the mouse button to be positioned on the first Resistor Band
+	MoveTo(iXBand2,iYBand2)
+
+;Get the colour at that point and say instructions for that colour and Band
+	 iColor = GetColorAtPoint (iXBand2, iYBand2)
+	SayString(IntToString(iColor))
+
+; Put cursor back to Position and state (PC cursor) in case user wants to leave CAPTCHA solving behind.
+	PcCursor ()
+;Now jump to slider after instructions are read out
+	Delay (50)
+
+; index = slider.
+let iIndexPosCount = StringSegmentCount (strSliderDlgSelect, LIST_ITEM_SEPARATOR)
+
+; Real Tag index on Webpage
+	strIndexReal = StringSegment (strIndexPos, LIST_ITEM_SEPARATOR, index+1)
+	SayString(strIndexReal)
+	let iIndexReal = StringToInt (strIndexReal)
+
+	if MoveToTagByIndex(iIndexReal, uCaseTag) then 
+		RouteJAWSToPc ()
+		pause()
+		SayString("You are on Slider number")
+		SayString(IntToString(index))
+		SayString(". Activate the JAWS Cursor then Press the Lock Left Mouse Button command, and down arrow to move the slider to the correct resistance value. When you have finished moving the slider, Unlock the left mouse button. Then activate the Pc cursor.")
+		
+	endif
+
+
+ElIf (index == 3) then
+
+SayString(IntToString(index))
+;Jump to band 3 Resistor
+	
+	let iXBand3= iXElectronicsText -(iXTotalDistance*130/283)
+	let iYBand3= iYElectronicsText -(iYTotalDistance*32/92)
+
+;Add the offset required in order for the mouse button to be positioned on the first Resistor Band
+	MoveTo(iXBand3,iYBand3)
+
+;Get the colour at that point and say instructions for that colour and Band
+	 iColor = GetColorAtPoint (iXBand3, iYBand3)
+	SayString(IntToString(iColor))
+
+; Put cursor back to Position and state (PC cursor) in case user wants to leave CAPTCHA solving behind.
+	PcCursor ()
+;Now jump to slider after instructions are read out
+	Delay (50)
+
+; index = slider.
+let iIndexPosCount = StringSegmentCount (strSliderDlgSelect, LIST_ITEM_SEPARATOR)
+
+; Real Tag index on Webpage
+	strIndexReal = StringSegment (strIndexPos, LIST_ITEM_SEPARATOR, index+1)
+	SayString(strIndexReal)
+	let iIndexReal = StringToInt (strIndexReal)
+
+	if MoveToTagByIndex(iIndexReal, uCaseTag) then 
+		RouteJAWSToPc ()
+		Pause()
+		SayString("You are on Slider number")
+		SayString(IntToString(index))
+		SayString(". Activate the JAWS Cursor then Press the Lock Left Mouse Button command, and down arrow to move the slider to the correct resistance value.  When you have finished moving the slider, Unlock the left mouse button. Then activate the Pc cursor.")
+		
+	endif
+
+ElIf (index == 4) then
+
+SayString(IntToString(index))
+
+;Jump to band 4 Resistor
+	
+	let iXBand4= iXElectronicsText -(iXTotalDistance*87/283)
+	let iYBand4= iYElectronicsText -(iYTotalDistance*32/92)
+
+;Add the offset required in order for the mouse button to be positioned on the first Resistor Band
+	MoveTo(iXBand4,iYBand4)
+
+;Get the colour at that point and say instructions for that colour and Band
+	 iColor = GetColorAtPoint (iXBand4, iYBand4)
+	SayString(IntToString(iColor))
+
+; Put cursor back to Position and state (PC cursor) in case user wants to leave CAPTCHA solving behind.
+	PcCursor ()
+;Now jump to slider after instructions are read out
+	Delay (50)
+
+; index = slider.
+let iIndexPosCount = StringSegmentCount (strSliderDlgSelect, LIST_ITEM_SEPARATOR)
+
+; Real Tag index on Webpage
+	strIndexReal = StringSegment (strIndexPos, LIST_ITEM_SEPARATOR, index+1)
+	SayString(strIndexReal)
+	let iIndexReal = StringToInt (strIndexReal)
+
+	if MoveToTagByIndex(iIndexReal, uCaseTag) then 
+		RouteJAWSToPc ()
+		Pause()
+		SayString("You are on Slider number")
+		SayString(IntToString(index))
+		SayString(". Activate the JAWS Cursor then Press the Lock Left Mouse Button command, and down arrow to move the slider to the correct resistance value.  When you have finished moving the slider, Unlock the left mouse button. Then activate the Pc cursor.")
+		
+	endif
+
+endif
+
+EndScript
