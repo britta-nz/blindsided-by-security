@@ -1,0 +1,28 @@
+;RNZFB VPN access to JAWS cursor inaccessible icon
+; 2011 September
+
+Script RnzfbVPNAccess () ;Control+Alt+V
+var
+string sWindowName,
+int iXCoord, int iYCoord, int iXOffset, int iYOffset, int iXVPNWindow, int iYVPNWindow
+
+let sWindowName = GetWindowName (GetFocus())
+ if (sWindowName=="Shrew Soft VPN Access Manager")
+;Get Coordinates of the Shrewsoft Window
+	let iXVPNWindow=GetWindowLeft (GetFocus())
+	let iYVPNWindow=GetWindowTop (GetFocus()) 
+	SaveCursor()
+	JAWSCursor()
+;Add the never changing offset, for emulated mouse to jump on the RNZFB vpn connect button.
+	let iXCoord=iXVPNWindow+25
+	let iYCoord=iYVPNWindow+110
+	MoveTo(iXCoord,iYCoord)
+	;Double Click the RNZFB vpn connect button
+	LeftMouseButton()
+	LeftMouseButton()
+	RestoreCursor()
+	SayString("Rnzfb Username and password required.") 
+else
+	SayString("You are not focussed on the VPN Window.") 
+Endif 
+EndScript
