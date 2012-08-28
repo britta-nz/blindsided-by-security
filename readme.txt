@@ -9,6 +9,7 @@ http://nightly.mozilla.org/
 Reasons for having to use the Firefox nightly build download, instead of stable release Firefox 14:
 http://www.marcozehe.de/2012/04/30/initial-voiceover-support-now-in-firefox-nightly-builds-for-mac-os-x/
 
+Security Central NZ website at www.securitycentral.org.nz :
 Security_Central_Access.user.js  is a Greasemonkey script showing a simple way to alert the screen reader user, to the main navigation links on the www.securitycentral.org.nz website, being onmouseover menus (not just simple plain links).
 
 The Shrewsoft VPN JAWS screen reader script, uses JAWS mouse emulation mode to jump to the keyboard inaccessible VPN icon and emulate a double click to open the, then, accessible VPN logon window.
