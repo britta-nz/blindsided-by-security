@@ -1,0 +1,97 @@
+Script SampleColour () ;Control+Alt+S
+
+var
+string strBuf, 
+string uCaseTag, 
+string lCaseAttrs, 
+string strTag,
+string strId,
+string strSliderString,
+int intStrBufCount,
+int iIdStringLength,
+int index, 
+int iCurrent,
+int i,
+int j,
+string strIndexPos,
+string strCurrentTagIndex,
+string strSliderDlgSelect,
+int indexReal,
+int iIndexPosCount,
+string strIndexReal,
+int iIndexReal,
+string strSliderSelectString,
+int indexDlgReal,
+int iColor
+
+let uCaseTag = "DIV"
+let lCaseAttrs = "id"
+let strBuf=GetListOfTags(uCaseTag,lCaseAttrs,LIST_ITEM_SEPARATOR)
+
+ if !strBuf then 
+; no tags found
+Saystring("No tags found")
+ return 
+endIf 
+
+let intStrBufCount = StringSegmentCount (strBuf, LIST_ITEM_SEPARATOR)
+
+for i=1 to intStrBufCount
+
+	strTag = StringSegment (strBuf, LIST_ITEM_SEPARATOR, i) 
+	let iCurrent = i-1
+	let strCurrentTagIndex = IntToString(iCurrent)
+
+; each of the sliders has a unique id, id = "sliderresist1"
+; put all the sliders in a Selection dialog box, so user can select and jump between sliders.
+	let strID = "sliderresist"
+
+	let iIdStringLength = StringLength (strId)+1
+
+; If a match is found, the first matching character index is returned. 1 for matched character 1.
+	if (StringContains (strTag, strId) ) then
+	
+;Use your knowlege of strId string length to extract only the Slider Numbers themselves, for display in dialog box.
+			let strSliderString = SubString (strTag, iIdStringLength, 40)
+
+	if ( strSliderString == 1 || strSliderString == 2 || strSliderString == 3 || strSliderString == 4) then 
+; Jump to the Slider Band
+			strSliderSelectString = strSliderString+" Slider"
+			Let strIndexPos = strIndexPos+LIST_ITEM_SEPARATOR+strCurrentTagIndex
+;Use SliderNumber string and create array
+			Let strSliderDlgSelect = strSliderDlgSelect+ LIST_ITEM_SEPARATOR+strSliderSelectString
+		endif
+	EndIf
+endFor
+
+Let index = dlgSelectItemInList (strSliderDlgSelect, "Resistor Band Number select", FALSE)
+;;Let index = dlgSelectItemInList (strIndexPos, "Resistor Band Number select", FALSE)
+
+If index == 0 then
+		Return;
+ endif
+
+; Need to match index to the string you will select from dialog box.
+; Process the parallel IndexPos array to extract the real index
+let iIndexPosCount = StringSegmentCount (strSliderDlgSelect, LIST_ITEM_SEPARATOR)
+
+; Real Tag index on Webpage
+	strIndexReal = StringSegment (strIndexPos, LIST_ITEM_SEPARATOR, index+1)
+	;Let indexDlgReal = dlgSelectItemInList (strIndexReal , "Slider Tag Index select", FALSE)
+	SayString(strIndexReal)
+	let iIndexReal = StringToInt (strIndexReal)
+	
+	if MoveToTagByIndex(iIndexReal, uCaseTag) then 
+		
+		pause()
+		RouteJAWSToPc ()
+		pause()
+		JAWSCursor()
+;Get the colour at slider at actual html tag
+		 iColor = GetColorAtPoint (GetCursorCol(), GetCursorRow())
+		SayString(IntToString(iColor))
+
+	endif
+
+EndScript
+

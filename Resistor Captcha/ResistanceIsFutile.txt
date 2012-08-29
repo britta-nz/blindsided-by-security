@@ -9,7 +9,6 @@
 
 
 Script ResistanceIsFutile () ;Control+Alt+R
-
 var
 int iXCoord,
 int iYCoord,
@@ -181,7 +180,7 @@ SayString(IntToString(index))
 	PcCursor ()
 
 ;Now jump to slider after instructions are read out
-	Delay (50)
+	Delay (20)
 
 ; index = slider.
 let iIndexPosCount = StringSegmentCount (strSliderDlgSelect, LIST_ITEM_SEPARATOR)
@@ -219,7 +218,7 @@ SayString(IntToString(index))
 ; Put cursor back to Position and state (PC cursor) in case user wants to leave CAPTCHA solving behind.
 	PcCursor ()
 ;Now jump to slider after instructions are read out
-	Delay (50)
+	Delay (20)
 
 ; index = slider.
 let iIndexPosCount = StringSegmentCount (strSliderDlgSelect, LIST_ITEM_SEPARATOR)
@@ -257,7 +256,7 @@ SayString(IntToString(index))
 ; Put cursor back to Position and state (PC cursor) in case user wants to leave CAPTCHA solving behind.
 	PcCursor ()
 ;Now jump to slider after instructions are read out
-	Delay (50)
+	Delay (20)
 
 ; index = slider.
 let iIndexPosCount = StringSegmentCount (strSliderDlgSelect, LIST_ITEM_SEPARATOR)
@@ -272,7 +271,7 @@ let iIndexPosCount = StringSegmentCount (strSliderDlgSelect, LIST_ITEM_SEPARATOR
 		Pause()
 		SayString("You are on Slider number")
 		SayString(IntToString(index))
-		SayString(". Activate the JAWS Cursor then Press the Lock Left Mouse Button command, and down arrow to move the slider to the correct resistance value.  When you have finished moving the slider, Unlock the left mouse button. Then activate the Pc cursor.")
+		SayString(". Activate the JAWS Cursor then Press the Lock Left Mouse Button command, and down arrow to move the slider to the correct resistance value.  Press Control+shift+S to smaple the slider colour.")
 		
 	endif
 
@@ -295,7 +294,7 @@ SayString(IntToString(index))
 ; Put cursor back to Position and state (PC cursor) in case user wants to leave CAPTCHA solving behind.
 	PcCursor ()
 ;Now jump to slider after instructions are read out
-	Delay (50)
+	Delay (20)
 
 ; index = slider.
 let iIndexPosCount = StringSegmentCount (strSliderDlgSelect, LIST_ITEM_SEPARATOR)
@@ -315,5 +314,6 @@ let iIndexPosCount = StringSegmentCount (strSliderDlgSelect, LIST_ITEM_SEPARATOR
 	endif
 
 endif
+
 
 EndScript
