@@ -14,7 +14,7 @@
 //*******************************************
 //Code for ORCA Gnome GUI screen reader demo.
 
-// 1. Orca does not have links list, so user has to be told to Tab to the input letter, to activate it.
+// 1. Orca does not have links list, so user has to be told to Tab to the input letter, to activate it. <- review
 // 2. aria-live = polite works (whereas NVDA 2012.2.1, and JAWS 13 didn't), so role = alert, aria-live = assertive, can be changed.
 // 3. Orca needed onkeypress attribute specified, for spacebar and Enter keys to work on the input letters.
 // 4. Keyboard error message had to be removed, as this message makes Orca speak regardless of aria-live = off. IE solution would be coded differently.
